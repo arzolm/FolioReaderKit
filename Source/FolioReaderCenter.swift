@@ -112,7 +112,7 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
      */
     fileprivate func initialization() {
 
-        if (self.readerConfig.hideBars == true) {
+        if (readerConfig.hideBars == true) {
             self.pageIndicatorHeight = 0
         }
         
