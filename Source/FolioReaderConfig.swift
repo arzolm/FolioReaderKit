@@ -7,7 +7,6 @@
 //
 
 import UIKit
-
 import RealmSwift
 
 // MARK: - FolioReaderScrollDirection
@@ -20,8 +19,8 @@ import RealmSwift
 /// - defaultVertical: The default scroll direction, if not overridden; works as .vertical.
 public enum FolioReaderScrollDirection: Int {
     case vertical
-    case horizontal
     case horizontalWithVerticalContent
+    case horizontal
     case defaultVertical
 
     /// The current scroll direction

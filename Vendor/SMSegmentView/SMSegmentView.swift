@@ -176,7 +176,7 @@ class SMSegmentView: UIView, SMSegmentDelegate {
         self.layer.masksToBounds = true
     }
     
-    func addSegmentWithTitle(_ title: String?, onSelectionImage: UIImage?, offSelectionImage: UIImage?) {
+    func addSegmentWithTitle(_ title: String?, onSelectionImage: UIImage? = nil, offSelectionImage: UIImage? = nil) {
         
         let segment = SMSegment(
             separatorWidth: self.separatorWidth,
@@ -245,8 +245,9 @@ class SMSegmentView: UIView, SMSegmentDelegate {
     
     // MARK: Actions
     func selectSegmentAtIndex(_ index: Int) {
-        assert(index >= 0 && index < self.segments.count, "Index at \(index) is out of bounds")
-        self.selectSegment(self.segments[index])
+        
+        assert(index >= 0 && index < numberOfSegments, "Index at \(index) is out of bounds")
+        selectSegment(segments[index])
     }
     
     func deselectSegment() {

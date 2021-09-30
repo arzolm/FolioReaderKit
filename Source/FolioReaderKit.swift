@@ -68,7 +68,8 @@ public enum MediaOverlayStyle: Int {
     }
 
     func className() -> String {
-        return "mediaOverlayStyle\(self.rawValue)"
+        
+        "mediaOverlayStyle\(self.rawValue)"
     }
 }
 
@@ -110,7 +111,8 @@ open class FolioReader: NSObject {
     open weak var readerContainer: FolioReaderContainer?
     open weak var readerAudioPlayer: FolioReaderAudioPlayer?
     open weak var readerCenter: FolioReaderCenter? {
-        return self.readerContainer?.centerViewController
+        
+        readerContainer?.centerViewController
     }
 
     /// Check if reader is open
@@ -121,16 +123,19 @@ open class FolioReader: NSObject {
 
     /// Check if layout needs to change to fit Right To Left
     var needsRTLChange: Bool {
-        return (self.readerContainer?.book.spine.isRtl == true && self.readerContainer?.readerConfig.scrollDirection == .horizontal)
+        
+        readerContainer?.book.spine.isRtl == true && readerContainer?.readerConfig.scrollDirection == .horizontal
     }
 
     func isNight<T>(_ f: T, _ l: T) -> T {
-        return (self.nightMode == true ? f : l)
+        
+        nightMode ? f : l
     }
 
     /// UserDefault for the current ePub file.
     fileprivate var defaults: FolioReaderUserDefaults {
-        return FolioReaderUserDefaults(withIdentifier: self.readerContainer?.readerConfig.identifier)
+        
+        FolioReaderUserDefaults(withIdentifier: readerContainer?.readerConfig.identifier)
     }
 
     // Add necessary observers
@@ -156,13 +161,18 @@ extension FolioReader {
     /// - Parameters:
     ///   - parentViewController: View Controller that will present the reader container.
     ///   - epubPath: String representing the path on the disk of the ePub file. Must not be nil nor empty string.
-	///   - unzipPath: Path to unzip the compressed epub.
+    ///   - unzipPath: Path to unzip the compressed epub.
     ///   - config: FolioReader configuration.
     ///   - shouldRemoveEpub: Boolean to remove the epub or not. Default true.
     ///   - animated: Pass true to animate the presentation; otherwise, pass false.
     open func presentReader(parentViewController: UIViewController, withEpubPath epubPath: String, unzipPath: String? = nil, andConfig config: FolioReaderConfig, shouldRemoveEpub: Bool = true, animated:
         Bool = true) {
-        let readerContainer = FolioReaderContainer(withConfig: config, folioReader: self, epubPath: epubPath, unzipPath: unzipPath, removeEpub: shouldRemoveEpub)
+        
+        let readerContainer = FolioReaderContainer(withConfig: config,
+                                                   folioReader: self,
+                                                   epubPath: epubPath,
+                                                   unzipPath: unzipPath,
+                                                   removeEpub: shouldRemoveEpub)
         self.readerContainer = readerContainer
         parentViewController.present(readerContainer, animated: animated, completion: nil)
         addObservers()
@@ -174,23 +184,29 @@ extension FolioReader {
 extension FolioReader {
 
     public func register(defaults: [String: Any]) {
+        
         self.defaults.register(defaults: defaults)
     }
 
     /// Check if current theme is Night mode
     open var nightMode: Bool {
-        get { return self.defaults.bool(forKey: kNightMode) }
-        set (value) {
-            self.defaults.set(value, forKey: kNightMode)
+        
+        get { defaults.bool(forKey: kNightMode) }
+        set (mode) {
+            
+            defaults.set(mode, forKey: kNightMode)
 
-            if let readerCenter = self.readerCenter {
-                UIView.animate(withDuration: 0.6, animations: {
-                    _ = readerCenter.currentPage?.webView?.js("nightMode(\(self.nightMode))")
+            if let readerCenter = readerCenter {
+                
+                UIView.animate(withDuration: 0.6, animations: {[unowned self] in
+                    
+                    readerCenter.currentPage?.webView?.js("nightMode(\(nightMode))")
                     readerCenter.pageIndicatorView?.reloadColors()
-                    readerCenter.configureNavBar()
-                    readerCenter.scrollScrubber?.reloadColors()
-                    readerCenter.collectionView.backgroundColor = (self.nightMode == true ? self.readerContainer?.readerConfig.nightModeBackground : UIColor.white)
-                }, completion: { (finished: Bool) in
+                    readerCenter.configureNavigationBar()
+                    readerCenter.collectionView.backgroundColor = (nightMode ? readerContainer?.readerConfig.nightModeBackground : .white)
+                    
+                }, completion: { _ in
+                    
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "needRefreshPageMode"), object: nil)
                 })
             }
@@ -199,38 +215,34 @@ extension FolioReader {
 
     /// Check current font name. Default .andada
     open var currentFont: FolioReaderFont {
+        
         get {
-            guard
-                let rawValue = self.defaults.value(forKey: kCurrentFontFamily) as? Int,
-                let font = FolioReaderFont(rawValue: rawValue) else {
-                    return .andada
-            }
+            guard let rawValue = defaults.value(forKey: kCurrentFontFamily) as? Int,
+                  let font = FolioReaderFont(rawValue: rawValue) else { return .andada }
 
             return font
         }
         set (font) {
-            self.defaults.set(font.rawValue, forKey: kCurrentFontFamily)
-            _ = self.readerCenter?.currentPage?.webView?.js("setFontName('\(font.cssIdentifier)')")
+            
+            defaults.set(font.rawValue, forKey: kCurrentFontFamily)
+            readerCenter?.currentPage?.webView?.js("setFontName('\(font.cssIdentifier)')")
         }
     }
 
     /// Check current font size. Default .m
     open var currentFontSize: FolioReaderFontSize {
+
         get {
-            guard
-                let rawValue = self.defaults.value(forKey: kCurrentFontSize) as? Int,
-                let size = FolioReaderFontSize(rawValue: rawValue) else {
-                    return .m
-            }
+            guard let rawValue = defaults.value(forKey: kCurrentFontSize) as? Int,
+                  let size = FolioReaderFontSize(rawValue: rawValue) else { return .m }
 
             return size
         }
-        set (value) {
-            self.defaults.set(value.rawValue, forKey: kCurrentFontSize)
+        set (size) {
+            
+            defaults.set(size.rawValue, forKey: kCurrentFontSize)
 
-            guard let currentPage = self.readerCenter?.currentPage else {
-                return
-            }
+            guard let currentPage = readerCenter?.currentPage else { return }
 
             currentPage.webView?.js("setFontSize('\(currentFontSize.cssIdentifier)')")
         }
@@ -238,70 +250,64 @@ extension FolioReader {
 
     /// Check current audio rate, the speed of speech voice. Default 0
     open var currentAudioRate: Int {
-        get { return self.defaults.integer(forKey: kCurrentAudioRate) }
-        set (value) {
-            self.defaults.set(value, forKey: kCurrentAudioRate)
-        }
+        
+        get { defaults.integer(forKey: kCurrentAudioRate) }
+        set(rate) { defaults.set(rate, forKey: kCurrentAudioRate) }
     }
 
     /// Check the current highlight style.Default 0
     open var currentHighlightStyle: Int {
-        get { return self.defaults.integer(forKey: kCurrentHighlightStyle) }
-        set (value) {
-            self.defaults.set(value, forKey: kCurrentHighlightStyle)
-        }
+        
+        get { defaults.integer(forKey: kCurrentHighlightStyle) }
+        set (style) { defaults.set(style, forKey: kCurrentHighlightStyle) }
     }
 
     /// Check the current Media Overlay or TTS style
     open var currentMediaOverlayStyle: MediaOverlayStyle {
+        
         get {
-            guard let rawValue = self.defaults.value(forKey: kCurrentMediaOverlayStyle) as? Int,
-                let style = MediaOverlayStyle(rawValue: rawValue) else {
-                return MediaOverlayStyle.default
-            }
+            guard let rawValue = defaults.value(forKey: kCurrentMediaOverlayStyle) as? Int,
+                  let style = MediaOverlayStyle(rawValue: rawValue) else { return MediaOverlayStyle.default }
+            
             return style
         }
-        set (value) {
-            self.defaults.set(value.rawValue, forKey: kCurrentMediaOverlayStyle)
-        }
+        set (style) { defaults.set(style.rawValue, forKey: kCurrentMediaOverlayStyle) }
     }
 
     /// Check the current scroll direction. Default .defaultVertical
     open var currentScrollDirection: Int {
+        
         get {
-            guard let value = self.defaults.value(forKey: kCurrentScrollDirection) as? Int else {
-                return FolioReaderScrollDirection.defaultVertical.rawValue
-            }
-
-            return value
+        
+            guard let direction = defaults.value(forKey: kCurrentScrollDirection) as? Int else { return FolioReaderScrollDirection.defaultVertical.rawValue }
+            return direction
         }
-        set (value) {
-            self.defaults.set(value, forKey: kCurrentScrollDirection)
+        set(direction) {
+            
+            defaults.set(direction, forKey: kCurrentScrollDirection)
 
-            let direction = (FolioReaderScrollDirection(rawValue: currentScrollDirection) ?? .defaultVertical)
-            self.readerCenter?.setScrollDirection(direction)
+            let direction = FolioReaderScrollDirection(rawValue: currentScrollDirection) ?? .defaultVertical
+            readerCenter?.setScrollDirection(direction)
         }
     }
 
     open var currentMenuIndex: Int {
-        get { return self.defaults.integer(forKey: kCurrentTOCMenu) }
-        set (value) {
-            self.defaults.set(value, forKey: kCurrentTOCMenu)
-        }
+        
+        get { defaults.integer(forKey: kCurrentTOCMenu) }
+        set (index) { defaults.set(index, forKey: kCurrentTOCMenu) }
     }
 
     open var savedPositionForCurrentBook: [String: Any]? {
+        
         get {
-            guard let bookId = self.readerContainer?.book.name else {
-                return nil
-            }
-            return self.defaults.value(forKey: bookId) as? [String : Any]
+            guard let bookId = readerContainer?.book.name else { return nil }
+            
+            return defaults.value(forKey: bookId) as? [String : Any]
         }
         set {
-            guard let bookId = self.readerContainer?.book.name else {
-                return
-            }
-            self.defaults.set(newValue, forKey: bookId)
+            guard let bookId = readerContainer?.book.name else { return }
+            
+            defaults.set(newValue, forKey: bookId)
         }
     }
 }
@@ -317,15 +323,15 @@ extension FolioReader {
      Read Cover Image and Return an `UIImage`
      */
     open class func getCoverImage(_ epubPath: String, unzipPath: String? = nil) throws -> UIImage {
-        return try FREpubParser().parseCoverImage(epubPath, unzipPath: unzipPath)
+        try FREpubParser().parseCoverImage(epubPath, unzipPath: unzipPath)
     }
 
     open class func getTitle(_ epubPath: String, unzipPath: String? = nil) throws -> String {
-        return try FREpubParser().parseTitle(epubPath, unzipPath: unzipPath)
+        try FREpubParser().parseTitle(epubPath, unzipPath: unzipPath)
     }
 
     open class func getAuthorName(_ epubPath: String, unzipPath: String? = nil) throws-> String {
-        return try FREpubParser().parseAuthorName(epubPath, unzipPath: unzipPath)
+        try FREpubParser().parseAuthorName(epubPath, unzipPath: unzipPath)
     }
 }
 
@@ -335,13 +341,10 @@ extension FolioReader {
 
     /// Save Reader state, book, page and scroll offset.
     @objc open func saveReaderState() {
-        guard isReaderOpen else {
-            return
-        }
-
-        guard let currentPage = self.readerCenter?.currentPage, let webView = currentPage.webView else {
-            return
-        }
+        
+        guard isReaderOpen,
+              let currentPage = readerCenter?.currentPage,
+              let webView = currentPage.webView else { return }
 
         let position = [
             "pageNumber": (self.readerCenter?.currentPageNumber ?? 0),
@@ -349,16 +352,17 @@ extension FolioReader {
             "pageOffsetY": webView.scrollView.contentOffset.y
             ] as [String : Any]
 
-        self.savedPositionForCurrentBook = position
+        savedPositionForCurrentBook = position
     }
 
     /// Closes and save the reader current instance.
     open func close() {
-        self.saveReaderState()
-        self.isReaderOpen = false
-        self.isReaderReady = false
-        self.readerAudioPlayer?.stop(immediate: true)
-        self.defaults.set(0, forKey: kCurrentTOCMenu)
-        self.delegate?.folioReaderDidClose?(self)
+        
+        saveReaderState()
+        isReaderOpen = false
+        isReaderReady = false
+        readerAudioPlayer?.stop(immediate: true)
+        defaults.set(0, forKey: kCurrentTOCMenu)
+        delegate?.folioReaderDidClose?(self)
     }
 }

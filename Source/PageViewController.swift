@@ -16,6 +16,7 @@ class PageViewController: UIPageViewController {
     var viewControllerOne: UIViewController!
     var viewControllerTwo: UIViewController!
     var index: Int
+    
     fileprivate var readerConfig: FolioReaderConfig
     fileprivate var folioReader: FolioReader
 
@@ -37,6 +38,8 @@ class PageViewController: UIPageViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.navigationBar.backgroundColor = folioReader.isNight(readerConfig.nightModeNavBackground, .white)
 
         segmentedControl = UISegmentedControl(items: segmentedControlItems)
         segmentedControl.addTarget(self, action: #selector(PageViewController.didSwitchMenu(_:)), for: UIControl.Event.valueChanged)
@@ -72,7 +75,7 @@ class PageViewController: UIPageViewController {
         configureNavBar()
     }
 
-    func configureNavBar() {
+    private func configureNavBar() {
         let navBackground = self.folioReader.isNight(self.readerConfig.nightModeMenuBackground,self.readerConfig.daysModeNavBackground)
         let tintColor = self.readerConfig.tintColor
         let navText = self.folioReader.isNight(UIColor.white, UIColor.black)

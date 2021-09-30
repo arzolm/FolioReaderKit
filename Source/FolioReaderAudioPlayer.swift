@@ -372,32 +372,31 @@ open class FolioReaderAudioPlayer: NSObject {
         updateNowPlayingInfo()
     }
 
-    // MARK: TTS Sentence
-
+    // MARK: - TTS Sentence
     func speakSentence() {
-        guard
-            let readerCenter = self.folioReader.readerCenter,
-            let currentPage = readerCenter.currentPage else {
+        
+        guard let readerCenter = self.folioReader.readerCenter,
+              let currentPage = readerCenter.currentPage else { return }
+
+        currentPage.webView?.js("getSentenceWithIndex('\(book.playbackActiveClass)')"){[unowned self] sentence in
+            
+            guard let sentence = sentence else {
+                
+                if readerCenter.isLastPage() {
+                    
+                    stop()
+                    
+                } else {
+                    
+                    readerCenter.changePageToNext()
+                }
                 return
-        }
-
-        let playbackActiveClass = book.playbackActiveClass
-        guard let sentence = currentPage.webView?.js("getSentenceWithIndex('\(playbackActiveClass)')") else {
-            if (readerCenter.isLastPage() == true) {
-                self.stop()
-            } else {
-                readerCenter.changePageToNext()
             }
-
-            return
+            guard let href = readerCenter.getCurrentChapter()?.href else { return }
+            
+            // TODO QUESTION: The previous code made it possible to call `playText` with the parameter `href` being an empty string. Was that valid? should this logic be kept?
+            playText(href, text: sentence)
         }
-
-        guard let href = readerCenter.getCurrentChapter()?.href else {
-            return
-        }
-
-        // TODO QUESTION: The previous code made it possible to call `playText` with the parameter `href` being an empty string. Was that valid? should this logic be kept?
-        self.playText(href, text: sentence)
     }
 
     func readCurrentSentence() {
@@ -572,5 +571,5 @@ extension FolioReaderAudioPlayer: AVAudioPlayerDelegate {
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
-	return input.rawValue
+    return input.rawValue
 }

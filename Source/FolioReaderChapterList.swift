@@ -47,7 +47,7 @@ class FolioReaderChapterList: UITableViewController {
 
         // Register cell classes
         self.tableView.register(FolioReaderChapterListCell.self, forCellReuseIdentifier: kReuseCellIdentifier)
-        self.tableView.separatorInset = UIEdgeInsets.zero
+        self.tableView.separatorInset = .zero
         self.tableView.backgroundColor = self.folioReader.isNight(self.readerConfig.nightModeMenuBackground, self.readerConfig.menuBackgroundColor)
         self.tableView.separatorColor = self.folioReader.isNight(self.readerConfig.nightModeSeparatorColor, self.readerConfig.menuSeparatorColor)
 
@@ -84,10 +84,10 @@ class FolioReaderChapterList: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: kReuseCellIdentifier, for: indexPath) as! FolioReaderChapterListCell
 
-        cell.setup(withConfiguration: self.readerConfig)
         let tocReference = tocItems[indexPath.row]
         let isSection = tocReference.children.count > 0
 
+        cell.setup()
         cell.indexLabel?.text = tocReference.title.trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Add audio duration for Media Ovelay
@@ -125,7 +125,7 @@ class FolioReaderChapterList: UITableViewController {
         delegate?.chapterList(self, didSelectRowAtIndexPath: indexPath, withTocReference: tocReference)
         
         tableView.deselectRow(at: indexPath, animated: true)
-        dismiss { 
+        dismiss {
             self.delegate?.chapterList(didDismissedChapterList: self)
         }
     }

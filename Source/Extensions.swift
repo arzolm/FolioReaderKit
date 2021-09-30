@@ -8,6 +8,65 @@
 
 import Foundation
 import UIKit
+import WebKit
+
+extension UIApplication {
+    
+    var statusBarUIView: UIView? {
+        
+        if #available(iOS 13.0, *) {
+            let tag = 38482
+            let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+            
+            if let statusBar = keyWindow?.viewWithTag(tag) {
+                return statusBar
+            } else {
+                guard let statusBarFrame = keyWindow?.windowScene?.statusBarManager?.statusBarFrame else { return nil }
+                let statusBarView = UIView(frame: statusBarFrame)
+                statusBarView.tag = tag
+                keyWindow?.addSubview(statusBarView)
+                return statusBarView
+            }
+        } else if responds(to: Selector(("statusBar"))) {
+            return value(forKey: "statusBar") as? UIView
+        } else {
+            return nil
+        }
+    }
+}
+
+//MARK: - WebView+Helper
+extension WKWebView {
+    
+    func evaluate(script: String, completion: @escaping (Any?, Error?) -> Void) {
+        
+        var finished = false
+
+        evaluateJavaScript(script) { (result, error) in
+            
+            completion(result, error)
+            finished = true
+        }
+
+        while !finished {
+            
+            RunLoop.current.run(mode: .default, before: .distantFuture)
+        }
+    }
+}
+
+//MARK: - UIView+Helper
+extension UIView {
+    
+    var safeInsets: UIEdgeInsets {
+        
+        if #available(iOS 11, *) {
+            
+            return safeAreaInsets
+        }
+        return .zero
+    }
+}
 
 extension UICollectionView.ScrollDirection {
     static func direction(withConfiguration readerConfig: FolioReaderConfig) -> UICollectionView.ScrollDirection {
@@ -44,6 +103,7 @@ extension CGRect {
 }
 
 extension ScrollDirection {
+    
     static func negative(withConfiguration readerConfig: FolioReaderConfig, scrollType: ScrollType = .page) -> ScrollDirection {
         return readerConfig.isDirection(.down, .right, .right)
     }
@@ -331,6 +391,11 @@ internal extension String {
     func appendingPathExtension(_ str: String) -> String {
         return (self as NSString).appendingPathExtension(str) ?? self+"."+str
     }
+    
+    var isNotEmpty: Bool {
+        
+        !trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 }
 
 internal extension UIImage {
@@ -431,8 +496,14 @@ internal extension UIImage {
 internal extension UIViewController {
     
     func setCloseButton(withConfiguration readerConfig: FolioReaderConfig) {
+        
         let closeImage = UIImage(readerImageNamed: "icon-navbar-close")?.ignoreSystemTint(withConfiguration: readerConfig)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: closeImage, style: .plain, target: self, action: #selector(dismiss as () -> Void))
+        
+        let closeBarButtonItem = UIBarButtonItem(image: closeImage,
+                                                 style: .plain,
+                                                 target: self,
+                                                 action: #selector(dismiss as () -> Void))
+        navigationItem.leftBarButtonItem = closeBarButtonItem
     }
     
     @objc func dismiss() {
@@ -458,7 +529,7 @@ internal extension UIViewController {
     
     func setTranslucentNavigation(_ translucent: Bool = true, color: UIColor, tintColor: UIColor = UIColor.white, titleColor: UIColor = UIColor.black, andFont font: UIFont = UIFont.systemFont(ofSize: 17)) {
         let navBar = self.navigationController?.navigationBar
-        navBar?.setBackgroundImage(UIImage.imageWithColor(color), for: UIBarMetrics.default)
+        navBar?.setBackgroundImage(UIImage.imageWithColor(color), for: .default)
         navBar?.isHidden = false
         navBar?.isTranslucent = translucent
         navBar?.tintColor = tintColor

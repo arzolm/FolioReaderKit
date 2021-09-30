@@ -38,6 +38,7 @@ html {
 }
 
 body {
+    -webkit-text-size-adjust: none;
     padding: 40px 20px !important;
     overflow: hidden !important;
 }
@@ -241,14 +242,14 @@ html.nightMode .highlight-underline {border-bottom: 2px solid rgba(240, 40, 20, 
 .lora, .lora p, .lora span, .lora div { font-family: "Lora", serif !important; }
 .raleway, .raleway p, .raleway span, .raleway div { font-family: "Raleway", sans-serif !important; }
 
-html.textSizeOne, .textSizeOne body { font-size: 13px !important; }
-html.textSizeTwo, .textSizeTwo body { font-size: 15px !important; }
-html.textSizeThree, .textSizeThree body { font-size: 17px !important; }
-html.textSizeFour, .textSizeFour body { font-size: 19px !important; }
-html.textSizeFive, .textSizeFive body { font-size: 21px !important; }
+html.textSizeOne, .textSizeOne body { font-size: 27pt !important; }
+html.textSizeTwo, .textSizeTwo body { font-size: 29pt !important; }
+html.textSizeThree, .textSizeThree body { font-size: 31pt !important; }
+html.textSizeFour, .textSizeFour body { font-size: 33pt !important; }
+html.textSizeFive, .textSizeFive body { font-size: 37pt !important; }
 
 h1 {
-    font-size: 2em;
+    font-size: 1.7em;
     line-height: 1.2;
 }
 h2 {

@@ -16,7 +16,7 @@ open class FolioReaderContainer: UIViewController {
     
     // Mark those property as public so they can accessed from other classes/subclasses.
     public var epubPath: String
-	public var unzipPath: String?
+    public var unzipPath: String?
     public var book: FRBook
     
     public var centerNavigationController: UINavigationController?
@@ -36,13 +36,13 @@ open class FolioReaderContainer: UIViewController {
     ///   - config: Current Folio Reader configuration
     ///   - folioReader: Current instance of the FolioReader kit.
     ///   - path: The ePub path on system. Must not be nil nor empty string.
-	///   - unzipPath: Path to unzip the compressed epub.
+    ///   - unzipPath: Path to unzip the compressed epub.
     ///   - removeEpub: Should delete the original file after unzip? Default to `true` so the ePub will be unziped only once.
     public init(withConfig config: FolioReaderConfig, folioReader: FolioReader, epubPath path: String, unzipPath: String? = nil, removeEpub: Bool = true) {
         self.readerConfig = config
         self.folioReader = folioReader
         self.epubPath = path
-		self.unzipPath = unzipPath
+        self.unzipPath = unzipPath
         self.shouldRemoveEpub = removeEpub
         self.book = FRBook()
 
@@ -92,19 +92,20 @@ open class FolioReaderContainer: UIViewController {
             ])
     }
 
+
     /// Set the `FolioReaderConfig` and epubPath.
     ///
     /// - Parameters:
     ///   - config: Current Folio Reader configuration
     ///   - path: The ePub path on system. Must not be nil nor empty string.
-	///   - unzipPath: Path to unzip the compressed epub.
+    ///   - unzipPath: Path to unzip the compressed epub.
     ///   - removeEpub: Should delete the original file after unzip? Default to `true` so the ePub will be unziped only once.
     open func setupConfig(_ config: FolioReaderConfig, epubPath path: String, unzipPath: String? = nil, removeEpub: Bool = true) {
         self.readerConfig = config
         self.folioReader = FolioReader()
         self.folioReader.readerContainer = self
         self.epubPath = path
-		self.unzipPath = unzipPath
+        self.unzipPath = unzipPath
         self.shouldRemoveEpub = removeEpub
     }
 
@@ -158,8 +159,9 @@ open class FolioReaderContainer: UIViewController {
         DispatchQueue.global(qos: .userInitiated).async {
 
             do {
-                let parsedBook = try FREpubParser().readEpub(epubPath: self.epubPath, removeEpub: self.shouldRemoveEpub, unzipPath: self.unzipPath)
-                self.book = parsedBook
+                self.book = try FREpubParser().readEpub(epubPath: self.epubPath,
+                                                             removeEpub: self.shouldRemoveEpub,
+                                                             unzipPath: self.unzipPath)
                 self.folioReader.isReaderOpen = true
 
                 // Reload data
@@ -173,6 +175,7 @@ open class FolioReaderContainer: UIViewController {
                     self.folioReader.delegate?.folioReader?(self.folioReader, didFinishedLoading: self.book)
                 }
             } catch {
+                
                 self.errorOnLoad = true
                 self.alert(message: error.localizedDescription)
             }
@@ -182,8 +185,9 @@ open class FolioReaderContainer: UIViewController {
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if (self.errorOnLoad == true) {
-            self.dismiss()
+        if errorOnLoad {
+            
+            dismiss()
         }
     }
 
@@ -191,8 +195,9 @@ open class FolioReaderContainer: UIViewController {
      Initialize the media player
      */
     func addAudioPlayer() {
-        self.audioPlayer = FolioReaderAudioPlayer(withFolioReader: self.folioReader, book: self.book)
-        self.folioReader.readerAudioPlayer = audioPlayer
+        
+        audioPlayer = FolioReaderAudioPlayer(withFolioReader: folioReader, book: book)
+        folioReader.readerAudioPlayer = audioPlayer
     }
 
     // MARK: - Status Bar
