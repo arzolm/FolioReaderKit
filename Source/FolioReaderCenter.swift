@@ -229,7 +229,6 @@ open class FolioReaderCenter: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
         
         //aka willRotate
-        print("start",#function)
         guard folioReader.isReaderReady else { return }
 
         setPageSize()
@@ -261,7 +260,6 @@ open class FolioReaderCenter: UIViewController {
         coordinator.animate {[unowned self] _ in
             
             //aka willAnimateRotation
-            print("animation",#function)
             
             guard folioReader.isReaderReady else { return }
             
@@ -275,7 +273,6 @@ open class FolioReaderCenter: UIViewController {
         } completion: {[unowned self] _ in
             
             //ala didRotate
-            print("finished",#function)
             
             guard folioReader.isReaderReady, let currentPage = currentPage else { return }
             

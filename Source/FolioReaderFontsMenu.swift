@@ -143,10 +143,10 @@ class FolioReaderFontsMenu: UIViewController {
         dayNightSegmentContainerView.addSegmentWithTitle(readerConfig.localizedFontMenuDay, onSelectionImage: sunSelected, offSelectionImage: sunNormal)
         dayNightSegmentContainerView.addSegmentWithTitle(readerConfig.localizedFontMenuNight, onSelectionImage: moonSelected, offSelectionImage: moonNormal)
         dayNightSegmentContainerView.selectSegmentAtIndex(folioReader.nightMode ? 1 : 0)
-        menuView.addSubview(dayNightSegmentContainerView)
+//        menuView.addSubview(dayNightSegmentContainerView)
 
         // Separator
-        separator1 = UIView(frame: CGRect(x: 0, y: dayNightSegmentContainerView.frame.height+dayNightSegmentContainerView.frame.origin.y, width: view.frame.width, height: 1))
+        separator1 = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 1))//dayNightSegmentContainerView.frame.maxY
         separator1.backgroundColor = readerConfig.nightModeSeparatorColor
         menuView.addSubview(separator1)
         
@@ -297,17 +297,17 @@ class FolioReaderFontsMenu: UIViewController {
     private func layout() {
         
         let bottomInset = folioReader.readerCenter?.view.safeInsets.bottom ?? 0
-        var visibleHeight: CGFloat = readerConfig.canChangeScrollDirection ? 200 : 170
+        var visibleHeight: CGFloat = readerConfig.canChangeScrollDirection ? 200 : 115//170
         visibleHeight = readerConfig.canChangeFontStyle ? visibleHeight : visibleHeight - 55
 
         menuView.frame = CGRect(origin: CGPoint(x: 0, y: view.frame.height-visibleHeight-bottomInset),
                                 size: view.frame.size)
         
-        dayNightSegmentContainerView.frame = CGRect(origin: .zero,
-                                                    size: CGSize(width: view.bounds.width, height: 55))
+//        dayNightSegmentContainerView.frame = CGRect(origin: .zero,
+//                                                    size: CGSize(width: view.bounds.width, height: 55))
         
-        separator1.frame = CGRect(x: 0, y: dayNightSegmentContainerView.frame.height+dayNightSegmentContainerView.frame.origin.y,
-                                  width: view.frame.width, height: 1)
+        separator1.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 1)
+        //dayNightSegmentContainerView.frame.maxY
         
         fontsNameSegmentContainerView.frame = CGRect(x: 15, y: separator1.frame.height+separator1.frame.origin.y,
                                                      width: view.frame.width-30, height: readerConfig.canChangeFontStyle ? 55: 0)
