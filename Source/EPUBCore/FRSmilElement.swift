@@ -6,13 +6,15 @@
 //
 //
 
-import UIKit
+import Foundation
+import AEXML
 
 // Media Overlay Documentation
 // http://www.idpf.org/accessibility/guidelines/content/overlays/overview.php#mo005-samp
 
 
 class FRSmilElement: NSObject {
+    
     var name: String // the name of the tag: <seq>, <par>, <text>, <audio>
     var attributes: [String: String]!
     var children: [FRSmilElement]
@@ -21,6 +23,11 @@ class FRSmilElement: NSObject {
         self.name = name
         self.attributes = attributes
         self.children = [FRSmilElement]()
+    }
+    
+    convenience init(element: AEXMLElement) {
+        
+        self.init(name: element.name, attributes: element.attributes)
     }
 
     // MARK: - Element attributes

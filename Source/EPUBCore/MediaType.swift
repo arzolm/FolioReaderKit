@@ -13,7 +13,8 @@ import UIKit
 
  Examples of mediatypes are image/gif, text/css and application/xhtml+xml
  */
-public struct MediaType: Equatable {
+public struct MediaType {
+    
     public let name: String
     public let defaultExtension: String
     public let extensions: [String]
@@ -26,26 +27,30 @@ public struct MediaType: Equatable {
 
 }
 
-// MARK: - Equatable
+extension MediaType: Equatable {
+    
+    // MARK: - Equatable
 
-/// :nodoc:
-public func == (lhs: MediaType, rhs: MediaType) -> Bool {
-    guard lhs.name == rhs.name else { return false }
-    guard lhs.defaultExtension == rhs.defaultExtension else { return false }
-    guard lhs.extensions == rhs.extensions else { return false }
-    return true
+    /// :nodoc:
+    static public func == (lhs: MediaType, rhs: MediaType) -> Bool {
+        
+        lhs.name == rhs.name && lhs.defaultExtension == rhs.defaultExtension && lhs.extensions == rhs.extensions
+    }
 }
+
 
 
 /**
  Manages mediatypes that are used by epubs.
  */
 extension MediaType {
+    
     static let xhtml = MediaType(name: "application/xhtml+xml", defaultExtension: "xhtml", extensions: ["htm", "html", "xhtml", "xml"])
     static let epub = MediaType(name: "application/epub+zip", defaultExtension: "epub")
     static let ncx = MediaType(name: "application/x-dtbncx+xml", defaultExtension: "ncx")
     static let opf = MediaType(name: "application/oebps-package+xml", defaultExtension: "opf")
-    static let javaScript = MediaType(name: "text/javascript", defaultExtension: "js")
+//    static let javaScript = MediaType(name: "text/javascript", defaultExtension: "js")
+    static let javaScript = MediaType(name: "application/javascript", defaultExtension: "js")
     static let css = MediaType(name: "text/css", defaultExtension: "css")
 
     // images
@@ -70,7 +75,10 @@ extension MediaType {
     static let xpgt = MediaType(name: "application/adobe-page-template+xml", defaultExtension: "xpgt")
     static let pls = MediaType(name: "application/pls+xml", defaultExtension: "pls")
 
-    static let mediatypes = [xhtml, epub, ncx, opf, jpg, png, gif, javaScript, css, svg, ttf, ttf1, ttf2, openType, woff, mp3, mp4, ogg, smil, xpgt, pls]
+    static var mediatypes: [MediaType] {
+        
+        [xhtml, epub, ncx, opf, jpg, png, gif, javaScript, css, svg, ttf, ttf1, ttf2, openType, woff, mp3, mp4, ogg, smil, xpgt, pls]
+    }
 
     /**
      Gets the MediaType based on the file mimetype.
@@ -79,21 +87,24 @@ extension MediaType {
      - returns: A know mediatype or create a new one.
      */
     static func by(name: String, fileName: String?) -> MediaType {
+        
         for mediatype in mediatypes {
+            
             if mediatype.name == name {
+                
                 return mediatype
             }
         }
-        let ext = fileName?.pathExtension ?? ""
-        return MediaType(name: name, defaultExtension: ext)
+        let defaultExtension = fileName?.pathExtension ?? ""
+        return MediaType(name: name, defaultExtension: defaultExtension)
     }
 
     /**
      Gets the MediaType based on the file extension.
      */
     static func by(fileName: String) -> MediaType? {
-        let ext = "." + (fileName as NSString).pathExtension
-        return mediatypes.filter({ $0.extensions.contains(ext) }).first
+        
+        mediatypes.filter{ $0.extensions.contains(fileName.pathExtension) }.first
     }
 
     /**
@@ -101,20 +112,21 @@ extension MediaType {
      - returns: `true` if is a image and `false` if not
      */
     static func isBitmapImage(_ mediaType: MediaType) -> Bool {
-        return mediaType == jpg || mediaType == png || mediaType == gif
+        
+        mediaType == jpg || mediaType == png || mediaType == gif
     }
 
     /**
      Gets the MediaType based on the file extension.
      */
     static func determineMediaType(_ fileName: String) -> MediaType? {
+        
         let ext = fileName.pathExtension
 
         for mediatype in mediatypes {
-            if mediatype.defaultExtension == ext {
-                return mediatype
-            }
-            if mediatype.extensions.contains(ext) {
+            
+            if mediatype.defaultExtension == ext || mediatype.extensions.contains(ext) {
+                
                 return mediatype
             }
         }

@@ -9,6 +9,7 @@
 import UIKit
 
 open class FRResource: NSObject {
+    
     var id: String!
     var properties: String?
     var mediaType: MediaType!
@@ -17,16 +18,19 @@ open class FRResource: NSObject {
     public var href: String!
     public var fullHref: String!
 
-    func basePath() -> String! {
-        if href == nil || href.isEmpty { return nil }
+    func basePath() -> String? {
+        
+        guard href?.isEmpty == false else { return nil }
+        
         var paths = fullHref.components(separatedBy: "/")
         paths.removeLast()
+        
         return paths.joined(separator: "/")
     }
-}
-
-// MARK: Equatable
-
-func ==(lhs: FRResource, rhs: FRResource) -> Bool {
-    return lhs.id == rhs.id && lhs.href == rhs.href
+    
+    // MARK: - Equatable
+    static func ==(lhs: FRResource, rhs: FRResource) -> Bool {
+        
+        lhs.id == rhs.id && lhs.href == rhs.href
+    }
 }
