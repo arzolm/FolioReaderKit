@@ -1482,7 +1482,7 @@ extension FolioReaderCenter: UIScrollViewDelegate {
         
         if !isCollectionView {
 
-            collectionView.isScrollEnabled = false
+//            collectionView.isScrollEnabled = false
         }
     }
 
@@ -1546,7 +1546,7 @@ extension FolioReaderCenter: UIScrollViewDelegate {
         
         if !isCollectionView {
 
-            collectionView.isScrollEnabled = true
+//            collectionView.isScrollEnabled = true
             
         } else if totalPages > 0 {
             

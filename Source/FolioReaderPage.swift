@@ -273,14 +273,14 @@ open class FolioReaderPage: UICollectionViewCell {
         
         guard !readerConfig.hideBars else {
             
-            return UIEdgeInsets(top: topSafeAreaInset, left: 0, bottom: bottomSafeAreaInset, right: 0)
+            return UIEdgeInsets(top: topSafeAreaInset, left: 1, bottom: bottomSafeAreaInset, right: 1)
         }
         
         let navBarHeight = folioReader.readerCenter?.navigationController?.navigationBar.frame.size.height ?? 0
         let topInset = readerConfig.shouldHideNavigationOnTap ? topSafeAreaInset : navBarHeight + topSafeAreaInset
         let bottomInset: CGFloat = 46 + bottomSafeAreaInset // height of page indicator+bottom inset
         
-        return UIEdgeInsets(top: topInset, left: 0, bottom: bottomInset, right: 0)
+        return UIEdgeInsets(top: topInset, left: 1, bottom: bottomInset, right: 1)
          
     }
     

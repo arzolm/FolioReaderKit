@@ -357,13 +357,14 @@ open class FolioReaderWKWebView: WKWebView {
             case .vertical, .defaultVertical, .horizontalWithVerticalContent:
                 
                 scrollView.isPagingEnabled = false
-                scrollView.bounces = true
                 
             case .horizontal:
                 
                 scrollView.isPagingEnabled = true
-                scrollView.bounces = false
         }
+        scrollView.bounces = false
+        scrollView.alwaysBounceVertical = false
+        scrollView.alwaysBounceHorizontal = false
     }
     
     //MARK: - Private general methods
