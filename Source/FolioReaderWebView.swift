@@ -44,11 +44,13 @@ open class FolioReaderWKWebView: WKWebView {
     }
     
     //MARK: - Lifecycle
-    init(frame: CGRect, readerContainer: FolioReaderContainer) {
+    init(frame: CGRect,
+         readerContainer: FolioReaderContainer,
+         configuration: WKWebViewConfiguration = WKWebViewConfiguration()) {
         
         self.readerContainer = readerContainer
 
-        super.init(frame: frame, configuration: WKWebViewConfiguration())
+        super.init(frame: frame, configuration: configuration)
     }
     
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
@@ -67,10 +69,12 @@ open class FolioReaderWKWebView: WKWebView {
             return super.canPerformAction(action, withSender: sender)
         }
         
-        if action == #selector(highlight)
-            || action == #selector(highlightWithNote)
-            || action == #selector(updateHighlightNote)
-            || action == #selector(copy(_:)) && currentMenuOption != MenuOptions.colorsMenu && currentMenuOption != MenuOptions.highlightMenu {
+        if action == #selector(highlight) ||
+            action == #selector(highlightWithNote) ||
+            action == #selector(updateHighlightNote) ||
+            action == #selector(copy(_:)) &&
+            currentMenuOption != MenuOptions.colorsMenu &&
+            currentMenuOption != MenuOptions.highlightMenu {
             
             //|| action == #selector(define)
             //|| action == #selector(play) && (book.hasAudio || readerConfig.enableTTS)
@@ -146,7 +150,7 @@ open class FolioReaderWKWebView: WKWebView {
 //    }
     
     @objc
-    private func highlight(_ sender: UIMenuController) {
+    private func highlight(_ sender: UIMenuController?) {
         
         let script = "highlightString('\(HighlightStyle.classForStyle(folioReader.currentHighlightStyle))')"
         
@@ -160,7 +164,7 @@ open class FolioReaderWKWebView: WKWebView {
                 
                 setMenuVisible(false)
                 createMenu(options: .highlightMenu)
-                setMenuVisible(true, andRect: sender.menuFrame)
+                setMenuVisible(true)//, andRect: sender.menuFrame
                 
                 js("getHTML()"){[unowned self] html in
                     
@@ -378,11 +382,11 @@ open class FolioReaderWKWebView: WKWebView {
 //        js("window.getSelection().removeAllRanges();")
     }
     
-    private func colorsMenu(_ sender: UIMenuController) {
+    private func colorsMenu(_ sender: UIMenuController?) {
         
         setMenuVisible(false)
         createMenu(options: .colorsMenu)
-        setMenuVisible(true, andRect: sender.menuFrame)
+        setMenuVisible(true)//, andRect: sender.menuFrame
     }
     
     private func removeHighlight(_ sender: UIMenuController?) {
