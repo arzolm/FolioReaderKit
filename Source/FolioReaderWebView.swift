@@ -157,7 +157,7 @@ open class FolioReaderWKWebView: WKWebView {
         js(script){[unowned self] json in
             
             if let dictionary = parse(json: json) {
-                
+                //
 //                var rect = NSCoder.cgRect(for: dictionary["rect"]!)
 //                rect = sender.menuFrame
 //                rect.origin = CGPoint(x: 0, y: readerContainer?.view.safeInsets.top ?? 0)
