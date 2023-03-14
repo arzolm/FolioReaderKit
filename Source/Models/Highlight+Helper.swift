@@ -244,9 +244,18 @@ extension Highlight {
         let str = (matchingHighlight.text as NSString)
 
         let mapped = matches?.map { (match) -> Highlight in
-            var contentPre = str.substring(with: NSRange(location: match.range.location-kHighlightRange, length: kHighlightRange))
-            var contentPost = str.substring(with: NSRange(location: match.range.location + match.range.length, length: kHighlightRange))
-
+            
+            var length = kHighlightRange
+            var contentPre = str.substring(with: NSRange(location: match.range.location-length,
+                                                         length: length))
+            
+            let contentPostLocation = match.range.location + match.range.length
+            if contentPostLocation+length > str.length {
+                length = (contentPostLocation+length)-str.length
+            }
+            let contentPostRange = NSRange(location: contentPostLocation, length: length)
+            var contentPost = str.substring(with: contentPostRange)
+            
             // Normalize string before save
             contentPre = Highlight.subString(ofContent: contentPre, fromRangeOfString: ">", withPattern: "((?=[^>]*$)(.|\\s)*$)")
             contentPost = Highlight.subString(ofContent: contentPost, fromRangeOfString: "<", withPattern: "^((.|\\s)*?)(?=<)")
